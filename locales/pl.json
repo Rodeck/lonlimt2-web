@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "home": "Strona główna",
+    "patchNotes": "Aktualizacje",
+    "presentation": "Prezentacja",
+    "register": "Zarejestruj się",
+    "login": "Zaloguj się"
+  },
+  "hero": {
+    "tagline": "Dołącz do legend.",
+    "taglineSub": "Graj w LonliMT2.",
+    "description": "Klasyczny świat Metin2 w nowej odsłonie. Zbalansowana rozgrywka, aktywna społeczność i regularne aktualizacje czekają na ciebie.",
+    "cta": "Zarejestruj się teraz"
+  },
+  "placeholder": {
+    "comingSoon": "Wkrótce dostępne",
+    "comingSoonDesc": "Ta sekcja jest aktualnie w przygotowaniu. Zajrzyj wkrótce!"
+  },
+  "footer": {
+    "serverName": "LonliMT2",
+    "copyright": "© 2026 LonliMT2. Wszelkie prawa zastrzeżone."
+  },
+  "lang": {
+    "toggle": "EN"
+  },
+  "page": {
+    "home": {
+      "title": "LonliMT2 — Dołącz do legendy",
+      "desc": "Oficjalny serwer LonliMT2. Zarejestruj się i zacznij swoją przygodę w świecie Metin2."
+    },
+    "patchNotes": {
+      "title": "Aktualizacje — LonliMT2",
+      "desc": "Historia zmian i aktualizacji serwera LonliMT2."
+    },
+    "presentation": {
+      "title": "Prezentacja serwera — LonliMT2",
+      "desc": "Poznaj LonliMT2 — funkcje, świat gry i społeczność."
+    }
+  }
+}
