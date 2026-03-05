@@ -1,18 +1,17 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: [TEMPLATE] → 1.0.0 (initial ratification)
-Modified principles: none (initial fill from template)
+Version change: 1.0.0 → 1.1.0 (MINOR — new principle added)
+Modified principles: none renamed
 Added sections:
-  - Core Principles (I–VI)
-  - Technology Stack & Platform Constraints
-  - Quality Gates & Development Workflow
-  - Governance
-Removed sections: none (all template placeholders replaced)
+  - Principle VII: Localisation — Polish & English
+  - Quality Gate 6: Localisation Audit (in Quality Gates section)
+  - i18n stack note in Technology Stack section
+Removed sections: none
 Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ aligned (Constitution Check references SSR, FreeBSD, MySQL SP gates)
-  - .specify/templates/spec-template.md ✅ aligned (FR/SC structure compatible with project scope)
-  - .specify/templates/tasks-template.md ✅ aligned (phase structure fits SSR web-app layout)
+  - .specify/templates/plan-template.md ✅ aligned (Constitution Check now includes i18n gate)
+  - .specify/templates/spec-template.md ✅ aligned (FR structure can capture l10n requirements)
+  - .specify/templates/tasks-template.md ✅ aligned (polish/cross-cutting phase covers l10n audit)
 Deferred TODOs: none
 -->
 
@@ -109,6 +108,38 @@ Tracking table:
 maintainable, deployable system that works beats an elegant architecture that is never
 finished.
 
+### VII. Localisation — Polish & English (NON-NEGOTIABLE)
+
+The application MUST support exactly two locales: Polish (`pl`) and English (`en`).
+
+**String externalisation**: Every user-facing string — including page titles, labels, error
+messages, notifications, and patch notes — MUST be stored in locale catalogue files (e.g.,
+JSON or YAML under `locales/pl.json` and `locales/en.json`). Hardcoded user-facing strings
+inside templates, components, or server handlers are prohibited.
+
+**Default locale**: Polish (`pl`) is the default. It MUST be served when no locale
+preference can be determined.
+
+**Browser-based detection**: The server SHOULD inspect the `Accept-Language` HTTP header
+on the first request and select `pl` or `en` accordingly (best-match). If neither `pl` nor
+`en` is present or parseable, fall back to `pl`. Detection is a best-effort convenience
+feature; it MUST NOT require a heavy i18n library to implement.
+
+**User preference**: Users MUST be able to manually switch the active locale via a visible
+language toggle on every page. The selected locale MUST be persisted — either in a cookie
+or as part of the session — so subsequent requests honour the user's explicit choice over
+browser detection.
+
+**Locale storage**: Locale catalogues MUST be plain-text files co-located under a top-level
+`locales/` directory. One file per locale. Keys MUST follow dot-notation namespacing
+(e.g., `auth.login.title`, `nav.home`). Missing keys in `en` MUST fall back to `pl`; a
+missing key in `pl` is a build-time error.
+
+**Rationale**: The server targets a Polish-speaking gaming community as its primary
+audience, but English coverage lowers the barrier for international players. Externalising
+all strings from the start eliminates costly retroactive i18n refactors and ensures patch
+notes and dynamic content can be localised consistently.
+
 ## Technology Stack & Platform Constraints
 
 **Runtime**: Node.js LTS (20 or 22), installed via FreeBSD pkg (`node20` or `node22`).
@@ -119,6 +150,12 @@ The framework choice MUST be locked in during Phase 0 research and recorded in p
 
 **Database**: MySQL 5.x / 8.x (compatible with existing Metin2 database schema).
 Driver: `mysql2` npm package (pure JS — no native add-ons required).
+
+**Localisation**: Lightweight, custom i18n helper preferred over full i18n libraries
+(e.g., `i18next` is acceptable if already a project dependency; a small hand-rolled
+helper reading JSON locale files is equally valid and preferred for simplicity). Two locale
+files: `locales/pl.json` (primary) and `locales/en.json`. Locale negotiation logic MUST be
+server-side.
 
 **Styling**: Custom CSS with a CSS preprocessor (e.g., Sass) OR Tailwind CSS used as a
 utility layer under a bespoke design system — NOT used directly as the design language.
@@ -137,8 +174,8 @@ requiring Docker or containerisation.
 All features MUST pass the following gates before being marked complete:
 
 1. **Constitution Compliance Check**: Confirm the feature does not violate any principle
-   (SSR, stored procedures, FreeBSD compat, security). Document violations in Complexity
-   Tracking if an exception is deliberately accepted.
+   (SSR, stored procedures, FreeBSD compat, security, i18n). Document violations in
+   Complexity Tracking if an exception is deliberately accepted.
 
 2. **Security Review**: Authentication, session, and data-handling code MUST be reviewed
    against Principle V checklist before merge.
@@ -153,6 +190,11 @@ All features MUST pass the following gates before being marked complete:
 
 5. **Database Access Audit**: Any code touching the database MUST be confirmed to call
    stored procedures only, with no raw SQL construction.
+
+6. **Localisation Audit**: Any new user-facing string MUST exist as a key in both
+   `locales/pl.json` and `locales/en.json` before the feature is marked complete. A
+   feature MUST NOT ship with hardcoded strings in templates or handlers. Language
+   switching MUST be verified to work on every page affected by the feature.
 
 **Branch strategy**: Feature branches off `main`. PRs require at least one review if team
 size allows. `main` MUST always be deployable.
@@ -177,4 +219,4 @@ All implementation plans MUST include a Constitution Check section that confirms
 compliance with active principles. Non-compliance MUST be documented in the Complexity
 Tracking table of the relevant plan — undocumented violations are not permitted.
 
-**Version**: 1.0.0 | **Ratified**: 2026-03-05 | **Last Amended**: 2026-03-05
+**Version**: 1.1.0 | **Ratified**: 2026-03-05 | **Last Amended**: 2026-03-05
