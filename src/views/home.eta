@@ -1,0 +1,44 @@
+<% layout("layouts/base") %>
+
+<!-- ── Hero Section (US1) ──────────────────────────────────── -->
+<section class="hero" aria-label="Hero">
+
+  <!-- Hero image with overlaid text -->
+  <div class="hero-image-wrapper">
+    <img
+      src="/static/images/main-image.png"
+      alt=""
+      class="hero-main-image"
+      aria-hidden="true"
+    />
+
+    <div class="hero-image-overlay">
+      <!-- Atmospheric decorative emblem -->
+      <div class="hero-emblem" aria-hidden="true">
+        <div class="hero-emblem-ring"></div>
+        <div class="hero-emblem-ring-inner"></div>
+        <div class="hero-emblem-diamond"></div>
+      </div>
+
+      <!-- Tagline -->
+      <h1 class="hero-title">
+        <%= it.hero.tagline %><br />
+        <span class="text-gold"><%= it.hero.taglineSub %></span>
+      </h1>
+
+      <!-- Gold divider -->
+      <div class="hero-divider" aria-hidden="true"></div>
+
+      <!-- Description -->
+      <p class="hero-description">
+        <%= it.hero.description %>
+      </p>
+
+      <!-- Call to action -->
+      <a href="<%= it.hero.ctaHref %>" class="hero-cta">
+        <%= it.hero.ctaText %>
+      </a>
+    </div>
+  </div>
+
+</section>

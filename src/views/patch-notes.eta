@@ -1,0 +1,17 @@
+<% layout("layouts/base") %>
+
+<!-- ── Patch Notes Placeholder (US2) ───────────────────────── -->
+<section class="placeholder-section" aria-label="<%= it.sectionTitle %>">
+
+  <div aria-hidden="true" class="hero-emblem mb-8">
+    <div class="hero-emblem-ring"></div>
+    <div class="hero-emblem-ring-inner"></div>
+    <div class="hero-emblem-diamond"></div>
+  </div>
+
+  <h1 class="placeholder-title"><%= it.sectionTitle %></h1>
+  <div class="placeholder-divider" aria-hidden="true"></div>
+  <p class="placeholder-text"><%= it.comingSoon %></p>
+  <p class="text-parchment-muted/60 text-sm mt-2"><%= it.comingSoonDesc %></p>
+
+</section>

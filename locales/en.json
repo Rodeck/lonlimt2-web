@@ -1,0 +1,40 @@
+{
+  "nav": {
+    "home": "Home",
+    "patchNotes": "Patch Notes",
+    "presentation": "Presentation",
+    "register": "Register",
+    "login": "Login"
+  },
+  "hero": {
+    "tagline": "Join the legend.",
+    "taglineSub": "Play LonliMT2.",
+    "description": "The classic Metin2 world reborn. Balanced gameplay, an active community, and regular updates await you.",
+    "cta": "Register now"
+  },
+  "placeholder": {
+    "comingSoon": "Coming soon",
+    "comingSoonDesc": "This section is currently being prepared. Check back soon!"
+  },
+  "footer": {
+    "serverName": "LonliMT2",
+    "copyright": "© 2026 LonliMT2. All rights reserved."
+  },
+  "lang": {
+    "toggle": "PL"
+  },
+  "page": {
+    "home": {
+      "title": "LonliMT2 — Join the Legend",
+      "desc": "Official LonliMT2 server. Register and begin your adventure in the world of Metin2."
+    },
+    "patchNotes": {
+      "title": "Patch Notes — LonliMT2",
+      "desc": "Changelog and update history for the LonliMT2 server."
+    },
+    "presentation": {
+      "title": "Server Presentation — LonliMT2",
+      "desc": "Discover LonliMT2 — features, world, and community."
+    }
+  }
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="<%= it.locale %>">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="<%= it.pageDesc %>" />
+  <title><%= it.pageTitle %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ───────────────────────────────────────── -->
+  <header>
+    <nav class="navbar" aria-label="Main navigation">
+      <a href="/" class="navbar-brand" aria-label="LonliMT2 — Home">LonliMT2</a>
+
+      <div class="navbar-links" role="list">
+        <% it.navItems.forEach(function(item) { %>
+          <a
+            href="<%= item.path %>"
+            class="<%= item.isActive ? 'nav-active' : 'nav-link' %>"
+            role="listitem"
+            <% if (item.isActive) { %>aria-current="page"<% } %>
+          ><%= item.label %></a>
+        <% }) %>
+      </div>
+
+      <div class="navbar-right">
+        <a
+          href="/set-locale?l=<%= it.langToggleLocale %>"
+          class="lang-toggle"
+          aria-label="Switch language"
+        ><%= it.langToggleLabel %></a>
+
+        <a href="/register" class="btn-register"><%= it.t("nav.register") %></a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ── Page Content ─────────────────────────────────────── -->
+  <main>
+    <%~ it.body %>
+  </main>
+
+  <!-- ── Footer ───────────────────────────────────────────── -->
+  <footer class="site-footer" role="contentinfo">
+    <p class="footer-server-name"><%= it.t("footer.serverName") %></p>
+    <p class="footer-copyright"><%= it.t("footer.copyright") %></p>
+  </footer>
+
+</body>
+</html>
