@@ -15,6 +15,11 @@
 </head>
 <body>
 
+  <!-- ── Pre-Alpha Banner ──────────────────────────────────── -->
+  <div class="pre-alpha-banner" role="alert" aria-live="polite">
+    <%= it.t("banner.preAlpha") %>
+  </div>
+
   <!-- ── Navigation ───────────────────────────────────────── -->
   <header>
     <nav class="navbar" aria-label="Main navigation">

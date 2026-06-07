@@ -31,10 +31,21 @@
 }
 
 @layer components {
+  /* ── Pre-Alpha Banner ─────────────────────────────────────── */
+
+  .pre-alpha-banner {
+    @apply fixed top-0 left-0 right-0 z-[60] flex items-center justify-center px-4 py-1 text-center text-xs font-semibold tracking-wide;
+    background: linear-gradient(90deg, #7a0000 0%, #a00000 50%, #7a0000 100%);
+    color: #ffd700;
+    min-height: 2rem;
+    border-bottom: 1px solid #5a0000;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  }
+
   /* ── Navigation ───────────────────────────────────────────── */
 
   .navbar {
-    @apply fixed top-0 left-0 right-0 z-50 flex flex-wrap items-center justify-between px-6 py-3 gap-x-6 gap-y-2;
+    @apply fixed top-8 left-0 right-0 z-50 flex flex-wrap items-center justify-between px-6 py-3 gap-x-6 gap-y-2;
     background: linear-gradient(
       180deg,
       rgba(13, 13, 13, 0.97) 0%,
@@ -203,5 +214,105 @@
 
   .footer-copyright {
     @apply text-parchment-muted text-xs tracking-wide;
+  }
+
+  /* ── Register Form ─────────────────────────────────────────── */
+
+  .register-section {
+    @apply flex-1 flex flex-col items-center overflow-y-auto pt-24 pb-16 px-4;
+    background-image: theme("backgroundImage.hero-atmosphere");
+  }
+
+  .register-panel {
+    @apply w-full max-w-md px-8 py-10;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(13, 13, 13, 0.98) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(212, 175, 55, 0.08);
+  }
+
+  .register-title {
+    @apply font-cinzel text-2xl text-gold text-center mb-2 tracking-widest;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  }
+
+  .register-divider {
+    @apply w-32 h-px mx-auto mb-8;
+    background-image: theme("backgroundImage.gold-divider");
+  }
+
+  .form-group {
+    @apply mb-5;
+  }
+
+  .form-label {
+    @apply block font-cinzel text-xs text-parchment-dark tracking-widest uppercase mb-2;
+  }
+
+  .form-input {
+    @apply w-full bg-obsidian border border-parchment-muted/20 text-parchment px-4 py-3 text-sm
+           outline-none transition-all duration-200;
+  }
+
+  .form-input::placeholder {
+    @apply text-parchment-muted opacity-40;
+  }
+
+  .form-input:focus {
+    @apply border-gold/50;
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.2);
+  }
+
+  .form-error {
+    @apply mb-6 px-4 py-3 text-sm text-parchment border border-crimson/50;
+    background: rgba(139, 0, 0, 0.3);
+  }
+
+  .btn-submit {
+    @apply w-full font-cinzel text-sm tracking-widest text-parchment bg-crimson hover:bg-crimson-dark
+           border border-gold/20 hover:border-gold/50 px-4 py-3 transition-all duration-200 uppercase cursor-pointer mt-2;
+    box-shadow: 0 4px 15px rgba(139, 0, 0, 0.35);
+  }
+
+  .btn-submit:hover {
+    box-shadow: 0 6px 20px rgba(139, 0, 0, 0.5);
+    transform: translateY(-1px);
+  }
+
+  /* ── Register Success Page ─────────────────────────────────── */
+
+  .success-section {
+    @apply flex-1 flex flex-col items-center justify-center text-center px-6 py-24 pt-32;
+    background-image: theme("backgroundImage.hero-atmosphere");
+  }
+
+  .success-panel {
+    @apply w-full max-w-lg px-8 py-12;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(13, 13, 13, 0.98) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7);
+  }
+
+  .success-title {
+    @apply font-cinzel text-3xl text-gold mb-3 tracking-wide;
+    text-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+  }
+
+  .success-message {
+    @apply text-parchment-dark text-base leading-relaxed mb-8;
+  }
+
+  .patcher-btn {
+    @apply inline-block font-cinzel text-sm tracking-widest text-parchment bg-crimson hover:bg-crimson-dark
+           border border-gold/30 hover:border-gold/60 px-10 py-4 transition-all duration-300 uppercase;
+    box-shadow: theme("boxShadow.btn-crimson");
+  }
+
+  .patcher-btn:hover {
+    box-shadow: 0 6px 25px rgba(139, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .patcher-note {
+    @apply text-parchment-muted text-xs mt-5 tracking-wide;
   }
 }

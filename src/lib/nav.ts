@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { key: "home", path: "/", labelKey: "nav.home" },
   { key: "patchNotes", path: "/patch-notes", labelKey: "nav.patchNotes" },
   { key: "presentation", path: "/presentation", labelKey: "nav.presentation" },
+  { key: "register", path: "/register", labelKey: "nav.register" },
 ] as const;
 
 export function buildNav(currentPath: string, locale: Locale): NavItemResolved[] {

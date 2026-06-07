@@ -1,0 +1,32 @@
+<% layout("layouts/base") %>
+
+<!-- ── Registration Success ──────────────────────────────────── -->
+<section class="success-section" aria-label="<%= it.t('register.success.heading') %>">
+
+  <div class="success-panel">
+
+    <!-- Decorative emblem -->
+    <div class="hero-emblem mx-auto mb-6" style="width:80px;height:80px" aria-hidden="true">
+      <div class="hero-emblem-ring"></div>
+      <div class="hero-emblem-ring-inner"></div>
+      <div class="hero-emblem-diamond" style="width:40px;height:40px"></div>
+    </div>
+
+    <h1 class="success-title"><%= it.t('register.success.heading') %></h1>
+    <div class="hero-divider" aria-hidden="true"></div>
+
+    <p class="success-message"><%= it.t('register.success.message') %></p>
+
+    <% if (it.patcherUrl) { %>
+    <a href="<%= it.patcherUrl %>" class="patcher-btn" download>
+      <%= it.t('register.success.downloadBtn') %>
+    </a>
+    <% } %>
+
+    <p class="patcher-note"><%= it.t('register.success.downloadNote') %></p>
+
+    <div class="hero-divider mt-8" aria-hidden="true"></div>
+
+  </div>
+
+</section>

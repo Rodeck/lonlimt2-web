@@ -36,5 +36,49 @@
       "title": "Server Presentation — LonliMT2",
       "desc": "Discover LonliMT2 — features, world, and community."
     }
+  },
+  "banner": {
+    "preAlpha": "⚠ Server is in Pre-Alpha. There may be serious bugs and progress may be lost with future updates."
+  },
+  "register": {
+    "page": {
+      "title": "Register — LonliMT2",
+      "desc": "Register your account on the LonliMT2 server."
+    },
+    "form": {
+      "title": "Create Account",
+      "email": {
+        "label": "Email address",
+        "placeholder": "your@email.com"
+      },
+      "login": {
+        "label": "Login",
+        "placeholder": "Player name"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Min. 6 characters"
+      },
+      "submit": "Register"
+    },
+    "error": {
+      "emailTaken": "This email address is already in use.",
+      "loginTaken": "This login name is already taken.",
+      "registrationDisabled": "New account registration is currently unavailable.",
+      "unknown": "A server error occurred. Please try again later.",
+      "invalidEmail": "Please enter a valid email address.",
+      "emailTooLong": "Email address must not exceed 64 characters.",
+      "loginTooLong": "Login must not exceed 30 characters.",
+      "passwordTooShort": "Password must be at least 6 characters.",
+      "passwordTooLong": "Password must not exceed 72 characters.",
+      "rateLimited": "Too many registration attempts. Please try again in an hour."
+    },
+    "success": {
+      "title": "Account Created! — LonliMT2",
+      "heading": "Welcome to LonliMT2!",
+      "message": "Your account has been created. Download the patcher, run it, and start playing!",
+      "downloadBtn": "Download Patcher",
+      "downloadNote": "Run the patcher as administrator to download the game files."
+    }
   }
 }

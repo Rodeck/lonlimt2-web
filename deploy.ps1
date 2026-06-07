@@ -7,8 +7,12 @@
     Builds CSS locally, copies project files to the VPS, runs npm install
     on the remote, and restarts the lonlimt2 service.
 
+    Optionally uploads a specific .env.<Env> file as .env on the host.
+
 .EXAMPLE
     .\deploy.ps1 1.2.3.4:22 root:mypassword
+    .\deploy.ps1 1.2.3.4:22 root:mypassword local
+    .\deploy.ps1 1.2.3.4:22 root:mypassword production
 #>
 
 param(
@@ -16,7 +20,10 @@ param(
     [string]$Target,
 
     [Parameter(Mandatory, Position = 1, HelpMessage = "Credentials as user:password")]
-    [string]$Credentials
+    [string]$Credentials,
+
+    [Parameter(Position = 2, HelpMessage = "Environment name — uploads .env.<Env> as .env on the host (e.g. 'local', 'production')")]
+    [string]$Env = ""
 )
 
 Set-StrictMode -Version Latest
@@ -34,8 +41,24 @@ $vpsPassword = $credParts[1]
 
 $remoteDir   = "/usr/metin2/webpage"
 
+# ── Resolve env file ──────────────────────────────────────────────────────────
+
+$envFile = $null
+if ($Env -ne "") {
+    $envFile = Join-Path $PSScriptRoot ".env.$Env"
+    if (-not (Test-Path $envFile)) {
+        Write-Error "Env file not found: $envFile"
+        exit 1
+    }
+}
+
 Write-Host ""
 Write-Host "==> Deploying to ${vpsUser}@${vpsIp}:${vpsPort} -> $remoteDir"
+if ($envFile) {
+    Write-Host "    Env file : .env.$Env  ->  $remoteDir/.env"
+} else {
+    Write-Host "    Env file : (none — .env on host left unchanged)"
+}
 Write-Host ""
 
 # ── Check dependencies ─────────────────────────────────────────────────────────
@@ -125,6 +148,15 @@ Upload "$scriptDir\package.json"     "$remoteDir/"
 Upload "$scriptDir\package-lock.json" "$remoteDir/"
 Upload "$scriptDir\tsconfig.json"    "$remoteDir/"
 Upload "$scriptDir\tailwind.config.js" "$remoteDir/"
+
+if ($envFile) {
+    Write-Host "  [upload] .env.$Env -> $remoteDir/.env"
+    & pscp -P $vpsPort -pw $vpsPassword -q $envFile "${vpsUser}@${vpsIp}:${remoteDir}/.env"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Upload failed: $envFile"
+        exit 1
+    }
+}
 
 Write-Host ""
 

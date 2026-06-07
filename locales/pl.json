@@ -36,5 +36,49 @@
       "title": "Prezentacja serwera — LonliMT2",
       "desc": "Poznaj LonliMT2 — funkcje, świat gry i społeczność."
     }
+  },
+  "banner": {
+    "preAlpha": "⚠ Serwer jest w fazie Pre-Alpha. Mogą występować poważne błędy, a postęp może zostać utracony przy przyszłych aktualizacjach."
+  },
+  "register": {
+    "page": {
+      "title": "Rejestracja — LonliMT2",
+      "desc": "Zarejestruj swoje konto na serwerze LonliMT2."
+    },
+    "form": {
+      "title": "Utwórz konto",
+      "email": {
+        "label": "Adres e-mail",
+        "placeholder": "twoj@email.com"
+      },
+      "login": {
+        "label": "Login",
+        "placeholder": "Nazwa gracza"
+      },
+      "password": {
+        "label": "Hasło",
+        "placeholder": "Min. 6 znaków"
+      },
+      "submit": "Zarejestruj się"
+    },
+    "error": {
+      "emailTaken": "Ten adres e-mail jest już zajęty.",
+      "loginTaken": "Ta nazwa gracza jest już zajęta.",
+      "registrationDisabled": "Rejestracja nowych kont jest chwilowo niedostępna.",
+      "unknown": "Wystąpił błąd serwera. Spróbuj ponownie później.",
+      "invalidEmail": "Podaj prawidłowy adres e-mail.",
+      "emailTooLong": "Adres e-mail nie może przekraczać 64 znaków.",
+      "loginTooLong": "Login nie może przekraczać 30 znaków.",
+      "passwordTooShort": "Hasło musi mieć co najmniej 6 znaków.",
+      "passwordTooLong": "Hasło nie może przekraczać 72 znaków.",
+      "rateLimited": "Zbyt wiele prób rejestracji. Spróbuj ponownie za godzinę."
+    },
+    "success": {
+      "title": "Konto utworzone! — LonliMT2",
+      "heading": "Witaj na LonliMT2!",
+      "message": "Twoje konto zostało pomyślnie utworzone. Pobierz patcher, uruchom go i zacznij grać!",
+      "downloadBtn": "Pobierz Patcher",
+      "downloadNote": "Uruchom patcher jako administrator, aby pobrać pliki gry."
+    }
   }
 }

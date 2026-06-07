@@ -1,0 +1,90 @@
+<% layout("layouts/base") %>
+
+<!-- ── Registration Form ────────────────────────────────────── -->
+<section class="register-section" aria-label="<%= it.t('register.form.title') %>">
+
+  <div class="register-panel">
+
+    <!-- Decorative emblem -->
+    <div class="hero-emblem mx-auto mb-6" style="width:80px;height:80px" aria-hidden="true">
+      <div class="hero-emblem-ring"></div>
+      <div class="hero-emblem-ring-inner"></div>
+      <div class="hero-emblem-diamond" style="width:40px;height:40px"></div>
+    </div>
+
+    <h1 class="register-title"><%= it.t('register.form.title') %></h1>
+    <div class="register-divider" aria-hidden="true"></div>
+
+    <!-- Error message -->
+    <% if (it.errorKey) { %>
+    <div class="form-error" role="alert" aria-live="assertive">
+      <%= it.t(it.errorKey) %>
+    </div>
+    <% } %>
+
+    <form method="post" action="/register" novalidate>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label" for="email">
+          <%= it.t('register.form.email.label') %>
+        </label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          class="form-input"
+          placeholder="<%= it.t('register.form.email.placeholder') %>"
+          value="<%= it.emailValue || '' %>"
+          maxlength="64"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <!-- Login -->
+      <div class="form-group">
+        <label class="form-label" for="login">
+          <%= it.t('register.form.login.label') %>
+        </label>
+        <input
+          id="login"
+          type="text"
+          name="login"
+          class="form-input"
+          placeholder="<%= it.t('register.form.login.placeholder') %>"
+          value="<%= it.loginValue || '' %>"
+          maxlength="30"
+          required
+          autocomplete="username"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label class="form-label" for="password">
+          <%= it.t('register.form.password.label') %>
+        </label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          class="form-input"
+          placeholder="<%= it.t('register.form.password.placeholder') %>"
+          maxlength="72"
+          minlength="6"
+          required
+          autocomplete="new-password"
+        />
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-submit">
+        <%= it.t('register.form.submit') %>
+      </button>
+
+    </form>
+
+  </div>
+
+</section>

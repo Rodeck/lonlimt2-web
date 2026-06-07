@@ -1,6 +1,8 @@
+import "dotenv/config";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
+import { csrf } from "hono/csrf";
 import { Eta } from "eta";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -10,6 +12,15 @@ import type { Variables } from "./middleware/locale";
 import { buildNav } from "./lib/nav";
 import { t } from "./lib/i18n";
 import type { Locale } from "./lib/i18n";
+import {
+  createRegistrationRateLimiter,
+  getClientIP,
+} from "./middleware/rate-limit";
+import {
+  mysqlNativePassword,
+  callRegisterSP,
+  errorCodeToLocaleKey,
+} from "./services/account";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -59,6 +70,21 @@ function pageCtx(locale: Locale, currentPath: string) {
   };
 }
 
+// ── Registration rate limiter (10 attempts / IP / hour) ───────
+const registrationRateLimiter = createRegistrationRateLimiter(async (c) => {
+  const locale = c.get("locale");
+  const ctx = pageCtx(locale, "/register");
+  const html = await eta.renderAsync("register", {
+    ...ctx,
+    pageTitle: ctx.t("register.page.title"),
+    pageDesc: ctx.t("register.page.desc"),
+    errorKey: "register.error.rateLimited",
+    emailValue: "",
+    loginValue: "",
+  });
+  return c.html(html, 429);
+});
+
 // ── Home page (/): US1 ────────────────────────────────────────
 app.get("/", async (c) => {
   const locale = c.get("locale");
@@ -104,6 +130,109 @@ app.get("/presentation", async (c) => {
     sectionTitle: ctx.t("nav.presentation"),
     comingSoon: ctx.t("placeholder.comingSoon"),
     comingSoonDesc: ctx.t("placeholder.comingSoonDesc"),
+  });
+  return c.html(html);
+});
+
+// ── Registration form (GET /register) ─────────────────────────
+app.get("/register", async (c) => {
+  const locale = c.get("locale");
+  const ctx = pageCtx(locale, "/register");
+  const html = await eta.renderAsync("register", {
+    ...ctx,
+    pageTitle: ctx.t("register.page.title"),
+    pageDesc: ctx.t("register.page.desc"),
+    errorKey: "",
+    emailValue: "",
+    loginValue: "",
+  });
+  return c.html(html);
+});
+
+// ── Registration submit (POST /register) ──────────────────────
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+app.post("/register", csrf(), registrationRateLimiter, async (c) => {
+  const locale = c.get("locale");
+  const ctx = pageCtx(locale, "/register");
+  const ip = getClientIP(c);
+
+  const renderForm = async (
+    errorKey: string,
+    emailValue = "",
+    loginValue = "",
+  ) => {
+    const html = await eta.renderAsync("register", {
+      ...ctx,
+      pageTitle: ctx.t("register.page.title"),
+      pageDesc: ctx.t("register.page.desc"),
+      errorKey,
+      emailValue,
+      loginValue,
+    });
+    return c.html(html);
+  };
+
+  const body = await c.req.parseBody();
+  const email = String(body.email ?? "").trim();
+  const login = String(body.login ?? "").trim();
+  const password = String(body.password ?? "");
+
+  // Non-empty validation
+  if (!email || !login || !password) {
+    console.log(
+      `[${new Date().toISOString()}] REGISTER FAIL | ip=${ip} reason=EMPTY_FIELDS`,
+    );
+    return renderForm("register.error.unknown", email, login);
+  }
+
+  // Field length validation
+  if (email.length > 64) {
+    return renderForm("register.error.emailTooLong", email, login);
+  }
+  if (login.length > 30) {
+    return renderForm("register.error.loginTooLong", email, login);
+  }
+  if (password.length < 6) {
+    return renderForm("register.error.passwordTooShort", email, login);
+  }
+  if (password.length > 72) {
+    return renderForm("register.error.passwordTooLong", email, login);
+  }
+
+  // Email format validation
+  if (!EMAIL_RE.test(email)) {
+    return renderForm("register.error.invalidEmail", email, login);
+  }
+
+  // Hash password and call stored procedure
+  const passwordHash = mysqlNativePassword(password);
+  const result = await callRegisterSP(email, login, passwordHash);
+
+  if (!result.ok) {
+    const errorKey = errorCodeToLocaleKey(result.code);
+    console.log(
+      `[${new Date().toISOString()}] REGISTER FAIL | ip=${ip} email=${email} error=${result.code}`,
+    );
+    return renderForm(errorKey, email, login);
+  }
+
+  console.log(
+    `[${new Date().toISOString()}] REGISTER OK | ip=${ip} email=${email}`,
+  );
+  return c.redirect("/register/success", 302);
+});
+
+// ── Registration success (GET /register/success) ──────────────
+app.get("/register/success", async (c) => {
+  const locale = c.get("locale");
+  const ctx = pageCtx(locale, "/register");
+  const patcherUrl = process.env.PATCHER_URL ?? "";
+  const html = await eta.renderAsync("register-success", {
+    ...ctx,
+    pageTitle: ctx.t("register.success.title"),
+    pageDesc: ctx.t("register.page.desc"),
+    patcherUrl,
   });
   return c.html(html);
 });
