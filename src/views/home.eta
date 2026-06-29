@@ -35,9 +35,16 @@
       </p>
 
       <!-- Call to action -->
-      <a href="<%= it.hero.ctaHref %>" class="hero-cta">
-        <%= it.hero.ctaText %>
-      </a>
+      <div class="hero-actions">
+        <a href="<%= it.hero.ctaHref %>" class="hero-cta">
+          <%= it.hero.ctaText %>
+        </a>
+        <% if (it.hero.patcherUrl) { %>
+        <a href="<%= it.hero.patcherUrl %>" class="hero-cta-secondary" download>
+          <%= it.hero.downloadText %>
+        </a>
+        <% } %>
+      </div>
     </div>
   </div>
 

@@ -1,7 +1,7 @@
 {
-  "name": "lonlimt2-webpage",
+  "name": "fairmt2-webpage",
   "version": "1.0.0",
-  "description": "LonliMT2 game server portal",
+  "description": "FairMT2 game server portal",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",

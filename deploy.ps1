@@ -1,47 +1,84 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Deploy LonliMT2 webpage to a FreeBSD VPS via SSH.
+    Deploy FairMT2 webpage to a FreeBSD VPS via SSH (OpenSSH + key auth).
 
 .DESCRIPTION
     Builds CSS locally, copies project files to the VPS, runs npm install
     on the remote, and restarts the lonlimt2 service.
 
+    Uses the native Windows OpenSSH client (ssh.exe / scp.exe), so it honours
+    your ~/.ssh/config: host aliases, ports, usernames, and IdentityFile keys
+    are all resolved from there. Authentication is by SSH key (or ssh-agent) —
+    no password is passed on the command line.
+
     Optionally uploads a specific .env.<Env> file as .env on the host.
 
 .EXAMPLE
-    .\deploy.ps1 1.2.3.4:22 root:mypassword
-    .\deploy.ps1 1.2.3.4:22 root:mypassword local
-    .\deploy.ps1 1.2.3.4:22 root:mypassword production
+    # Uses the 'vps-lonli' alias from ~/.ssh/config (host, port, user, key)
+    .\deploy.ps1 vps-lonli
+    .\deploy.ps1 vps-lonli production
+
+    # Or target a raw host, overriding user / key / port explicitly
+    .\deploy.ps1 51.83.160.241:33666 production -User root -IdentityFile ~/.ssh/vps_lonli
 #>
 
 param(
-    [Parameter(Mandatory, Position = 0, HelpMessage = "VPS address as ip:port")]
+    [Parameter(Mandatory, Position = 0, HelpMessage = "SSH host alias (from ~/.ssh/config) or ip[:port]")]
     [string]$Target,
 
-    [Parameter(Mandatory, Position = 1, HelpMessage = "Credentials as user:password")]
-    [string]$Credentials,
+    [Parameter(Position = 1, HelpMessage = "Environment name -- uploads .env.<Env> as .env on the host (e.g. 'local', 'production')")]
+    [string]$Env = "",
 
-    [Parameter(Position = 2, HelpMessage = "Environment name — uploads .env.<Env> as .env on the host (e.g. 'local', 'production')")]
-    [string]$Env = ""
+    [Parameter(HelpMessage = "Override SSH user (default: from ~/.ssh/config or current user)")]
+    [string]$User = "",
+
+    [Parameter(HelpMessage = "Override identity (private key) file")]
+    [string]$IdentityFile = "",
+
+    [Parameter(HelpMessage = "Override SSH port (default: from ~/.ssh/config or 22)")]
+    [string]$Port = ""
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# ── Parse arguments ────────────────────────────────────────────────────────────
+$remoteDir = "/usr/metin2/webpage"
 
-$targetParts = $Target.Split(':', 2)
-$vpsIp       = $targetParts[0]
-$vpsPort     = if ($targetParts.Length -gt 1) { $targetParts[1] } else { "22" }
+# -- Parse target ----------------------------------------------------------------
+# If Target contains ':' treat it as host:port; otherwise it is a bare hostname
+# or an ~/.ssh/config Host alias (which supplies port/user/key on its own).
 
-$credParts   = $Credentials.Split(':', 2)
-$vpsUser     = $credParts[0]
-$vpsPassword = $credParts[1]
+if ($Target -match ':') {
+    $parts    = $Target.Split(':', 2)
+    $hostName = $parts[0]
+    if (-not $Port) { $Port = $parts[1] }
+} else {
+    $hostName = $Target
+}
 
-$remoteDir   = "/usr/metin2/webpage"
+$dest = if ($User) { "$User@$hostName" } else { $hostName }
 
-# ── Resolve env file ──────────────────────────────────────────────────────────
+# -- Build SSH/SCP option arrays -------------------------------------------------
+# ssh uses -p for port, scp uses -P. Auto-accept a new host key on first connect
+# but still protect against a changed key.
+
+$sshExtra = @('-o', 'StrictHostKeyChecking=accept-new')
+$scpExtra = @('-o', 'StrictHostKeyChecking=accept-new')
+
+if ($Port)         { $sshExtra += @('-p', $Port);          $scpExtra += @('-P', $Port) }
+if ($IdentityFile) { $sshExtra += @('-i', $IdentityFile);  $scpExtra += @('-i', $IdentityFile) }
+
+Write-Host ""
+Write-Host "==> Deploying to ${dest}$(if($Port){":$Port"}) -> $remoteDir"
+if ($Env -ne "") {
+    Write-Host "    Env file : .env.$Env  ->  $remoteDir/.env"
+} else {
+    Write-Host "    Env file : (none -- .env on host left unchanged)"
+}
+Write-Host ""
+
+# -- Resolve env file ------------------------------------------------------------
 
 $envFile = $null
 if ($Env -ne "") {
@@ -52,16 +89,7 @@ if ($Env -ne "") {
     }
 }
 
-Write-Host ""
-Write-Host "==> Deploying to ${vpsUser}@${vpsIp}:${vpsPort} -> $remoteDir"
-if ($envFile) {
-    Write-Host "    Env file : .env.$Env  ->  $remoteDir/.env"
-} else {
-    Write-Host "    Env file : (none — .env on host left unchanged)"
-}
-Write-Host ""
-
-# ── Check dependencies ─────────────────────────────────────────────────────────
+# -- Check dependencies ----------------------------------------------------------
 
 function Require-Command($cmd, $hint) {
     if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
@@ -70,57 +98,35 @@ function Require-Command($cmd, $hint) {
     }
 }
 
-Require-Command "plink" "Install PuTTY: https://www.putty.org  (ensure plink.exe is in PATH)"
-Require-Command "pscp"  "Install PuTTY: https://www.putty.org  (ensure pscp.exe is in PATH)"
-Require-Command "npm"   "Install Node.js: https://nodejs.org"
+Require-Command "ssh" "Windows OpenSSH client. Enable it: Settings > Apps > Optional Features > OpenSSH Client"
+Require-Command "scp" "Windows OpenSSH client. Enable it: Settings > Apps > Optional Features > OpenSSH Client"
+Require-Command "npm" "Install Node.js: https://nodejs.org"
 
-# ── Helper: run a remote command via plink ─────────────────────────────────────
+# -- Helper: run a remote command via ssh ----------------------------------------
 
 function Remote($cmd) {
     Write-Host "  [remote] $cmd"
-    $result = & plink -ssh -P $vpsPort -l $vpsUser -pw $vpsPassword -batch $vpsIp $cmd
+    & ssh @sshExtra $dest $cmd
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Remote command failed (exit $LASTEXITCODE): $cmd"
         exit 1
     }
-    return $result
 }
 
-# ── Helper: upload a local path via pscp ──────────────────────────────────────
+# -- Helper: upload local paths via scp ------------------------------------------
 
-function Upload($localPath, $remotePath) {
-    Write-Host "  [upload] $localPath -> $remotePath"
-    & pscp -P $vpsPort -pw $vpsPassword -r -q $localPath "${vpsUser}@${vpsIp}:${remotePath}"
+function Upload([string[]]$localPaths, $remotePath) {
+    foreach ($p in $localPaths) { Write-Host "  [upload] $p -> ${remotePath}" }
+    & scp @scpExtra -r @localPaths "${dest}:${remotePath}"
     if ($LASTEXITCODE -ne 0) {
-        Write-Error "Upload failed: $localPath"
+        Write-Error "Upload failed."
         exit 1
     }
 }
 
-# ── Helper: accept host key on first connect (PuTTY < 0.81 workaround) ────────
+# -- Step 1: Build CSS locally ---------------------------------------------------
 
-function Accept-HostKey() {
-    Write-Host "--> [0/5] Caching host key..."
-    # Pipe "y" to plink without -batch so it can prompt and cache the key in registry
-    $proc = Start-Process -FilePath "plink" `
-        -ArgumentList "-ssh -P $vpsPort -l $vpsUser -pw $vpsPassword $vpsIp exit" `
-        -RedirectStandardInput "$env:TEMP\plink_yes.txt" `
-        -RedirectStandardOutput "$env:TEMP\plink_out.txt" `
-        -RedirectStandardError  "$env:TEMP\plink_err.txt" `
-        -NoNewWindow -PassThru -Wait
-    # Ignore exit code — just needed to cache the key
-    Write-Host "    Host key cached."
-    Write-Host ""
-}
-
-# ── Step 0: Cache host key (first-run, safe to repeat) ───────────────────────
-
-"y" | Out-File -Encoding ascii "$env:TEMP\plink_yes.txt"
-Accept-HostKey
-
-# ── Step 1: Build CSS locally ──────────────────────────────────────────────────
-
-Write-Host "--> [1/5] Building CSS locally..."
+Write-Host "--> [1/4] Building CSS locally..."
 npm run build:css
 if ($LASTEXITCODE -ne 0) {
     Write-Error "CSS build failed. Fix errors before deploying."
@@ -129,51 +135,49 @@ if ($LASTEXITCODE -ne 0) {
 Write-Host "    CSS built OK"
 Write-Host ""
 
-# ── Step 2: Ensure remote directory exists ────────────────────────────────────
+# -- Step 2: Prepare remote directory --------------------------------------------
+# Clear the dirs we fully manage so scp recreates them cleanly (avoids scp's
+# nested-directory behaviour when a target dir already exists).
 
-Write-Host "--> [2/5] Preparing remote directory..."
-Remote "mkdir -p $remoteDir/public/css $remoteDir/public/images $remoteDir/locales $remoteDir/src"
+Write-Host "--> [2/4] Preparing remote directory..."
+Remote "mkdir -p $remoteDir && rm -rf $remoteDir/src $remoteDir/locales $remoteDir/public"
 Write-Host ""
 
-# ── Step 3: Copy files ─────────────────────────────────────────────────────────
+# -- Step 3: Copy files ----------------------------------------------------------
 
-Write-Host "--> [3/5] Uploading files..."
+Write-Host "--> [3/4] Uploading files..."
 
 $scriptDir = $PSScriptRoot
-
-Upload "$scriptDir\src\"             "$remoteDir/src"
-Upload "$scriptDir\locales\"         "$remoteDir/locales"
-Upload "$scriptDir\public\"          "$remoteDir/public"
-Upload "$scriptDir\package.json"     "$remoteDir/"
-Upload "$scriptDir\package-lock.json" "$remoteDir/"
-Upload "$scriptDir\tsconfig.json"    "$remoteDir/"
-Upload "$scriptDir\tailwind.config.js" "$remoteDir/"
+$sources = @(
+    (Join-Path $scriptDir 'src'),
+    (Join-Path $scriptDir 'locales'),
+    (Join-Path $scriptDir 'public'),
+    (Join-Path $scriptDir 'package.json'),
+    (Join-Path $scriptDir 'package-lock.json'),
+    (Join-Path $scriptDir 'tsconfig.json'),
+    (Join-Path $scriptDir 'tailwind.config.js')
+)
+Upload $sources $remoteDir
 
 if ($envFile) {
     Write-Host "  [upload] .env.$Env -> $remoteDir/.env"
-    & pscp -P $vpsPort -pw $vpsPassword -q $envFile "${vpsUser}@${vpsIp}:${remoteDir}/.env"
+    & scp @scpExtra $envFile "${dest}:${remoteDir}/.env"
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Upload failed: $envFile"
         exit 1
     }
 }
-
 Write-Host ""
 
-# ── Step 4: Install dependencies on remote ────────────────────────────────────
+# -- Step 4: Install deps + restart service --------------------------------------
 
-Write-Host "--> [4/5] Running npm install on remote..."
-Remote "cd $remoteDir && npm install --omit=dev 2>&1"
-Write-Host ""
-
-# ── Step 5: Restart service ───────────────────────────────────────────────────
-
-Write-Host "--> [5/5] Restarting lonlimt2 service..."
+Write-Host "--> [4/4] Installing dependencies and restarting service..."
+Remote "cd $remoteDir && npm install --omit=dev"
 Remote "service lonlimt2 restart"
 Write-Host ""
 
-# ── Done ───────────────────────────────────────────────────────────────────────
+# -- Done ------------------------------------------------------------------------
 
 Write-Host "==> Deploy complete."
-Write-Host "    http://${vpsIp}:8080"
+Write-Host "    http://${hostName}:8080"
 Write-Host ""

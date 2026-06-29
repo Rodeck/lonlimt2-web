@@ -8,33 +8,34 @@
   },
   "hero": {
     "tagline": "Dołącz do legend.",
-    "taglineSub": "Graj w LonliMT2.",
+    "taglineSub": "Graj w FairMT2.",
     "description": "Klasyczny świat Metin2 w nowej odsłonie. Zbalansowana rozgrywka, aktywna społeczność i regularne aktualizacje czekają na ciebie.",
-    "cta": "Zarejestruj się teraz"
+    "cta": "Zarejestruj się teraz",
+    "downloadPatcher": "Pobierz Patcher"
   },
   "placeholder": {
     "comingSoon": "Wkrótce dostępne",
     "comingSoonDesc": "Ta sekcja jest aktualnie w przygotowaniu. Zajrzyj wkrótce!"
   },
   "footer": {
-    "serverName": "LonliMT2",
-    "copyright": "© 2026 LonliMT2. Wszelkie prawa zastrzeżone."
+    "serverName": "FairMT2",
+    "copyright": "© 2026 FairMT2. Wszelkie prawa zastrzeżone."
   },
   "lang": {
     "toggle": "EN"
   },
   "page": {
     "home": {
-      "title": "LonliMT2 — Dołącz do legendy",
-      "desc": "Oficjalny serwer LonliMT2. Zarejestruj się i zacznij swoją przygodę w świecie Metin2."
+      "title": "FairMT2 — Dołącz do legendy",
+      "desc": "Oficjalny serwer FairMT2. Zarejestruj się i zacznij swoją przygodę w świecie Metin2."
     },
     "patchNotes": {
-      "title": "Aktualizacje — LonliMT2",
-      "desc": "Historia zmian i aktualizacji serwera LonliMT2."
+      "title": "Aktualizacje — FairMT2",
+      "desc": "Historia zmian i aktualizacji serwera FairMT2."
     },
     "presentation": {
-      "title": "Prezentacja serwera — LonliMT2",
-      "desc": "Poznaj LonliMT2 — funkcje, świat gry i społeczność."
+      "title": "Prezentacja serwera — FairMT2",
+      "desc": "Poznaj FairMT2 — funkcje, świat gry i społeczność."
     }
   },
   "banner": {
@@ -42,8 +43,8 @@
   },
   "register": {
     "page": {
-      "title": "Rejestracja — LonliMT2",
-      "desc": "Zarejestruj swoje konto na serwerze LonliMT2."
+      "title": "Rejestracja — FairMT2",
+      "desc": "Zarejestruj swoje konto na serwerze FairMT2."
     },
     "form": {
       "title": "Utwórz konto",
@@ -74,8 +75,8 @@
       "rateLimited": "Zbyt wiele prób rejestracji. Spróbuj ponownie za godzinę."
     },
     "success": {
-      "title": "Konto utworzone! — LonliMT2",
-      "heading": "Witaj na LonliMT2!",
+      "title": "Konto utworzone! — FairMT2",
+      "heading": "Witaj na FairMT2!",
       "message": "Twoje konto zostało pomyślnie utworzone. Pobierz patcher, uruchom go i zacznij grać!",
       "downloadBtn": "Pobierz Patcher",
       "downloadNote": "Uruchom patcher jako administrator, aby pobrać pliki gry."

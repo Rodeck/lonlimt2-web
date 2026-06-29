@@ -179,6 +179,18 @@
     transform: translateY(-1px);
   }
 
+  .hero-actions {
+    @apply flex flex-col sm:flex-row items-center justify-center gap-4;
+  }
+
+  .hero-cta-secondary {
+    @apply font-cinzel text-sm sm:text-base tracking-widest text-gold bg-transparent hover:bg-gold/10 border border-gold/50 hover:border-gold px-8 py-4 transition-all duration-300 inline-block uppercase;
+  }
+
+  .hero-cta-secondary:hover {
+    transform: translateY(-1px);
+  }
+
   /* ── Placeholder Pages ────────────────────────────────────── */
 
   .placeholder-section {

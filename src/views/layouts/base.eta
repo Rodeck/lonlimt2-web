@@ -23,7 +23,7 @@
   <!-- ── Navigation ───────────────────────────────────────── -->
   <header>
     <nav class="navbar" aria-label="Main navigation">
-      <a href="/" class="navbar-brand" aria-label="LonliMT2 — Home">LonliMT2</a>
+      <a href="/" class="navbar-brand" aria-label="FairMT2 — Home">FairMT2</a>
 
       <div class="navbar-links" role="list">
         <% it.navItems.forEach(function(item) { %>

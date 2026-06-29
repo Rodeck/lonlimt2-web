@@ -99,6 +99,8 @@ app.get("/", async (c) => {
       description: ctx.t("hero.description"),
       ctaText: ctx.t("hero.cta"),
       ctaHref: "/register",
+      downloadText: ctx.t("hero.downloadPatcher"),
+      patcherUrl: process.env.PATCHER_URL ?? "",
     },
   });
   return c.html(html);
@@ -239,5 +241,5 @@ app.get("/register/success", async (c) => {
 
 // ── Start server ──────────────────────────────────────────────
 serve({ fetch: app.fetch, port: 8080 }, (info) => {
-  console.log(`LonliMT2 running at http://localhost:${info.port}`);
+  console.log(`FairMT2 running at http://localhost:${info.port}`);
 });
